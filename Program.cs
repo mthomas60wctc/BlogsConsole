@@ -28,11 +28,19 @@ while (true)
     Console.WriteLine("Exiting program");
     break;
   }
-  if (userChoice == "1"){
+  if (userChoice == "1")
+  {
     displayBlogs();
   }
-  else if (userChoice == "2"){
+  else if (userChoice == "2")
+  {
     addBlog();
+  }
+  else if (userChoice == "3"){
+    //TODO: VIEW POSTS
+  }
+  else if (userChoice == "4"){
+    //TODO: MAKE A NEW POST
   }
   Console.WriteLine("Press enter to continue");
   Console.ReadLine();
@@ -42,9 +50,14 @@ Console.WriteLine("Goodnye!");
 
 logger.Info("Program ended");
 
+//TODO SELECT BLOG FUNCTION
+//TODO DISPLAY POSTS FUNCTION
+//TODO READ POST FUNCTION
+//TODO:WRITE POST FUNCTION
+
 void displayBlogs()
 {
-
+  //TODO: LIST NUMBERS ALONGSIDE BLOG
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
   Console.WriteLine("Displaying Blogs");
@@ -62,5 +75,5 @@ void addBlog()
 
   var blog = new Blog { Name = name };
   db.AddBlog(blog);
-logger.Info("Blog added - {name}", name);
+  logger.Info("Blog added - {name}", name);
 }
