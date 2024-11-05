@@ -28,6 +28,12 @@ while (true)
     Console.WriteLine("Exiting program");
     break;
   }
+  if (userChoice == "1"){
+    displayBlogs();
+  }
+  else if (userChoice == "2"){
+    addBlog();
+  }
   Console.WriteLine("Press enter to continue");
   Console.ReadLine();
   Console.Clear();
