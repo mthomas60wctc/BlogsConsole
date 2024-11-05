@@ -9,30 +9,13 @@ var logger = LogManager.Setup().LoadConfigurationFromFile(path).GetCurrentClassL
 
 logger.Info("Program started");
 
-
-// // Create and save a new Blog
-// Console.Write("Enter a name for a new Blog: ");
-// var name = Console.ReadLine();
-
-// var blog = new Blog { Name = name };
-
-// var db = new DataContext();
-// db.AddBlog(blog);
-// logger.Info("Blog added - {name}", name);
-
-// // Display all Blogs from the database
-// var query = db.Blogs.OrderBy(b => b.Name);
-
-// Console.WriteLine("All blogs in the database:");
-// foreach (var item in query)
-// {
-//   Console.WriteLine(item.Name);
-// }
+var db = new DataContext();
 
 string? userChoice = "";
 Console.Clear();
 
-while (true){
+while (true)
+{
   Console.WriteLine("-- BLOG DATABASE MENU --");
   Console.WriteLine("1 - View existing blogs");
   Console.WriteLine("2 - Make new blog");
@@ -40,7 +23,8 @@ while (true){
   Console.WriteLine("4 - Create new Post");
   Console.Write("Select (enter to quit): ");
   userChoice = Console.ReadLine();
-  if (userChoice.IsNullOrEmpty()){
+  if (userChoice.IsNullOrEmpty())
+  {
     Console.WriteLine("Exiting program");
     break;
   }
@@ -51,3 +35,26 @@ while (true){
 Console.WriteLine("Goodnye!");
 
 logger.Info("Program ended");
+
+void displayBlogs()
+{
+
+  // Display all Blogs from the database
+  var query = db.Blogs.OrderBy(b => b.Name);
+  Console.WriteLine("Displaying Blogs");
+  foreach (var item in query)
+  {
+    Console.WriteLine(item.Name);
+  }
+}
+
+void addBlog()
+{
+  // Create and save a new Blog
+  Console.Write("Enter a name for a new Blog: ");
+  var name = Console.ReadLine();
+
+  var blog = new Blog { Name = name };
+  db.AddBlog(blog);
+logger.Info("Blog added - {name}", name);
+}
