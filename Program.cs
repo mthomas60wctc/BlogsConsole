@@ -1,4 +1,5 @@
-﻿﻿using System.Xml;
+﻿﻿using System.ComponentModel.Design;
+using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
@@ -36,10 +37,13 @@ while (true)
   {
     addBlog();
   }
-  else if (userChoice == "3"){
+  else if (userChoice == "3")
+  {
+    selectBlog();
     //TODO: VIEW POSTS
   }
-  else if (userChoice == "4"){
+  else if (userChoice == "4")
+  {
     //TODO: MAKE A NEW POST
   }
   Console.WriteLine("Press enter to continue");
@@ -51,6 +55,25 @@ Console.WriteLine("Goodnye!");
 logger.Info("Program ended");
 
 //TODO SELECT BLOG FUNCTION
+
+void selectBlog()
+{
+  // Display all Blogs from the database
+  var query = db.Blogs.OrderBy(b => b.Name);
+  Console.WriteLine("Available Blogs");
+  for (int i = 0; i < query.Count(); i++)
+  {
+    Console.WriteLine($"{i + 1} - {query.ElementAt(i).Name}");
+  }
+  Console.Write("Select Blog: ");
+  int selection = 0;
+  while(!Int32.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > query.Count()){
+    Console.Write("Invalid selection, try again: ");
+  }
+  Console.WriteLine(selection);
+}
+
+
 //TODO DISPLAY POSTS FUNCTION
 //TODO READ POST FUNCTION
 //TODO:WRITE POST FUNCTION
@@ -60,8 +83,9 @@ void displayBlogs()
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
   Console.WriteLine("Displaying Blogs");
-  for(int i = 0; i < query.Count(); i++){
-    Console.WriteLine($"{i + 1} - {query.ElementAt(i).Name}");
+  foreach (Blog blog in query)
+  {
+    Console.WriteLine(blog.Name);
   }
 }
 
