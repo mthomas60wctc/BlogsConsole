@@ -57,13 +57,11 @@ logger.Info("Program ended");
 
 void displayBlogs()
 {
-  //TODO: LIST NUMBERS ALONGSIDE BLOG
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
   Console.WriteLine("Displaying Blogs");
-  foreach (var item in query)
-  {
-    Console.WriteLine(item.Name);
+  for(int i = 0; i < query.Count(); i++){
+    Console.WriteLine($"{i + 1} - {query.ElementAt(i).Name}");
   }
 }
 
