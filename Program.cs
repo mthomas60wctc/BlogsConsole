@@ -55,15 +55,15 @@ logger.Info("Program ended");
 
 //TODO SELECT BLOG FUNCTION
 
-void displayPosts(int id)
+void displayPosts(Blog? blog)
 {
   // Display all Blogs from the database
   IOrderedQueryable<Post> query;
-  if (id == -1){
+  if (blog is null){
     query = db.Posts.OrderBy(p => p.Title);
   }
   else{
-    query = db.Posts.Where(p => p.BlogId == id).OrderBy(p => p.Title);
+    query = db.Posts.Where(p => p.BlogId == blog.BlogId).OrderBy(p => p.Title);
   }
   Console.WriteLine("Displaying Blogs");
   foreach (Post post in query)
@@ -73,7 +73,7 @@ void displayPosts(int id)
   }
 }
 
-int selectBlog()
+Blog? selectBlog()
 {
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
@@ -89,14 +89,11 @@ int selectBlog()
   {
     Console.Write("Invalid selection, try again: ");
   }
-  if (selection == 0) return -1;
-  return query.ElementAt(selection).BlogId;
+  if (selection == 0) return null;
+  return query.ElementAt(selection);
   //returns unique ID
 }
 
-
-//TODO DISPLAY POSTS FUNCTION
-//TODO READ POST FUNCTION
 //TODO:WRITE POST FUNCTION
 
 void displayBlogs()
