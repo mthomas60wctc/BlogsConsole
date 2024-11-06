@@ -39,8 +39,7 @@ while (true)
   }
   else if (userChoice == "3")
   {
-    selectBlog();
-    //TODO: VIEW POSTS
+    displayPosts(selectBlog());
   }
   else if (userChoice == "4")
   {
@@ -56,7 +55,18 @@ logger.Info("Program ended");
 
 //TODO SELECT BLOG FUNCTION
 
-void selectBlog()
+void displayPosts(int id)
+{
+  // Display all Blogs from the database
+  var query = db.Posts.Where(p => p.BlogId == id).OrderBy(p => p.Title);
+  Console.WriteLine("Displaying Blogs");
+  foreach (Post post in query)
+  {
+    Console.WriteLine(post.Title);
+  }
+}
+
+int selectBlog()
 {
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
@@ -65,12 +75,15 @@ void selectBlog()
   {
     Console.WriteLine($"{i + 1} - {query.ElementAt(i).Name}");
   }
+  //allows user to select a blog
   Console.Write("Select Blog: ");
   int selection = 0;
-  while(!Int32.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > query.Count()){
+  while (!Int32.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > query.Count())
+  {
     Console.Write("Invalid selection, try again: ");
   }
-  Console.WriteLine(selection);
+  return query.ElementAt(selection).BlogId;
+  //returns unique ID
 }
 
 
@@ -93,7 +106,13 @@ void addBlog()
 {
   // Create and save a new Blog
   Console.Write("Enter a name for a new Blog: ");
-  var name = Console.ReadLine();
+  string name;
+  name = Console.ReadLine() ?? "";
+  while (name.IsNullOrEmpty())
+  {
+    Console.Write("Invalid entry, try again: ");
+    name = Console.ReadLine() ?? "";
+  }
 
   var blog = new Blog { Name = name };
   db.AddBlog(blog);
