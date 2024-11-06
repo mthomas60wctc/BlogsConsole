@@ -45,7 +45,7 @@ while (true)
   {
     //TODO: MAKE A NEW POST
   }
-  Console.WriteLine("Press enter to continue");
+  Console.WriteLine("\nPress enter to continue");
   Console.ReadLine();
   Console.Clear();
 }
@@ -58,11 +58,18 @@ logger.Info("Program ended");
 void displayPosts(int id)
 {
   // Display all Blogs from the database
-  var query = db.Posts.Where(p => p.BlogId == id).OrderBy(p => p.Title);
+  IOrderedQueryable<Post> query;
+  if (id == -1){
+    query = db.Posts.OrderBy(p => p.Title);
+  }
+  else{
+    query = db.Posts.Where(p => p.BlogId == id).OrderBy(p => p.Title);
+  }
   Console.WriteLine("Displaying Blogs");
   foreach (Post post in query)
   {
-    Console.WriteLine(post.Title);
+    Console.WriteLine($"\nTitle: {post.Title}\n");
+    Console.WriteLine($"Content: {post.Content}\n");
   }
 }
 
@@ -76,12 +83,13 @@ int selectBlog()
     Console.WriteLine($"{i + 1} - {query.ElementAt(i).Name}");
   }
   //allows user to select a blog
-  Console.Write("Select Blog: ");
+  Console.Write("Select Blog (0 for all): ");
   int selection = 0;
-  while (!Int32.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > query.Count())
+  while (!Int32.TryParse(Console.ReadLine(), out selection) || selection < 0 || selection > query.Count())
   {
     Console.Write("Invalid selection, try again: ");
   }
+  if (selection == 0) return -1;
   return query.ElementAt(selection).BlogId;
   //returns unique ID
 }
