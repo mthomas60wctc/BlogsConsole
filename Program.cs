@@ -33,22 +33,22 @@ while (true)
   }
   if (userChoice == "1")
   {
-    displayBlogs();
+    DisplayBlogs();
   }
   else if (userChoice == "2")
   {
-    addBlog();
+    AddBlog();
   }
   else if (userChoice == "3")
   {
-    displayPosts(selectBlog());
+    DisplayPosts(SelectBlog());
   }
   else if (userChoice == "4")
   {
-    Blog? blog = selectBlog();
+    Blog? blog = SelectBlog();
     while (blog is null){
       Console.WriteLine("You must select a single blog for posting!");
-      blog = selectBlog();
+      blog = SelectBlog();
     }
     WritePost(blog);
   }
@@ -62,7 +62,7 @@ logger.Info("Program ended");
 
 //TODO SELECT BLOG FUNCTION
 
-void displayPosts(Blog? blog)
+void DisplayPosts(Blog? blog)
 {
   // Display all Blogs from the database
   IOrderedQueryable<Post> query;
@@ -81,7 +81,7 @@ void displayPosts(Blog? blog)
   }
 }
 
-Blog? selectBlog()
+Blog? SelectBlog()
 {
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
@@ -122,7 +122,7 @@ void WritePost(Blog blog){
   logger.Info($"Post added to {blog.Name} - {title}");
 }
 
-void displayBlogs()
+void DisplayBlogs()
 {
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
@@ -133,7 +133,7 @@ void displayBlogs()
   }
 }
 
-void addBlog()
+void AddBlog()
 {
   // Create and save a new Blog
   Console.Write("Enter a name for a new Blog: ");
