@@ -79,8 +79,8 @@ void DisplayPosts(Blog? blog)
   }
   foreach (Post post in query)
   {
-    if (currentBlog != post.Blog.Name){
-      currentBlog = post.Blog.Name ?? "";
+    if (currentBlog != post.Blog?.Name){
+      currentBlog = post.Blog?.Name ?? "";
       Console.WriteLine($"\nDisplaying posts in {currentBlog}");
     }
     Console.WriteLine($"\n\tTitle: {post.Title}\n");
