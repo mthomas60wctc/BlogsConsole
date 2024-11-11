@@ -119,6 +119,7 @@ void WritePost(Blog blog){
       Blog = blog
   };
   db.AddPost(post);
+  logger.Info($"Post added to {blog.Name} - {title}");
 }
 
 void displayBlogs()
