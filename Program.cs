@@ -1,9 +1,4 @@
-﻿﻿using System.ComponentModel.Design;
-using System.Transactions;
-using System.Xml;
-using System.Xml.Serialization;
-using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Tokens;
+﻿﻿using Microsoft.IdentityModel.Tokens;
 using NLog;
 string path = Directory.GetCurrentDirectory() + "//nlog.config";
 
@@ -31,22 +26,28 @@ while (true)
     Console.WriteLine("Exiting program");
     break;
   }
+  Console.Clear();
   if (userChoice == "1")
   {
+    Console.WriteLine("-- DISPLAY BLOGS --");
     DisplayBlogs();
   }
   else if (userChoice == "2")
   {
+    Console.WriteLine("-- ADD BLOG --");
     AddBlog();
   }
   else if (userChoice == "3")
   {
+    Console.WriteLine("-- DISPLAY POSTS --");
     DisplayPosts(SelectBlog());
   }
   else if (userChoice == "4")
   {
+    Console.WriteLine("-- ADD POST --");
     Blog? blog = SelectBlog();
-    while (blog is null){
+    while (blog is null)
+    {
       Console.WriteLine("You must select a single blog for posting!");
       blog = SelectBlog();
     }
@@ -66,18 +67,24 @@ void DisplayPosts(Blog? blog)
 {
   // Display all Blogs from the database
   IOrderedQueryable<Post> query;
-  if (blog is null){
-  Console.WriteLine("Displaying all posts");
-    query = db.Posts.OrderBy(p => p.Title);
+  string currentBlog = "";
+  if (blog is null)
+  {
+    Console.WriteLine("Displaying all posts");
+    query = db.Posts.OrderBy(p => p.Title).OrderBy(p => p.Blog.Name);
   }
-  else{
-    Console.WriteLine($"Displaying posts in {blog.Name}");
+  else
+  {
     query = db.Posts.Where(p => p.BlogId == blog.BlogId).OrderBy(p => p.Title);
   }
   foreach (Post post in query)
   {
-    Console.WriteLine($"\nTitle: {post.Title}\n");
-    Console.WriteLine($"Content: {post.Content}\n");
+    if (currentBlog != post.Blog.Name){
+      currentBlog = post.Blog.Name ?? "";
+      Console.WriteLine($"\nDisplaying posts in {currentBlog}");
+    }
+    Console.WriteLine($"\n\tTitle: {post.Title}\n");
+    Console.WriteLine($"\tContent: {post.Content}\n");
   }
 }
 
@@ -102,10 +109,12 @@ Blog? SelectBlog()
   //returns unique ID
 }
 
-void WritePost(Blog blog){
-  Console.Write("Enter title for your post: ");
+void WritePost(Blog blog)
+{
+  Console.Write($"Enter title for your post in {blog.Name}: ");
   string? title = Console.ReadLine();
-  while (title.IsNullOrEmpty()){
+  while (title.IsNullOrEmpty())
+  {
     Console.Write("Please enter a valid title: ");
     title = Console.ReadLine();
   }
@@ -113,10 +122,10 @@ void WritePost(Blog blog){
   string? content = Console.ReadLine();
   Post post = new()
   {
-      Title = title,
-      Content = content,
-      BlogId = blog.BlogId,
-      Blog = blog
+    Title = title,
+    Content = content,
+    BlogId = blog.BlogId,
+    Blog = blog
   };
   db.AddPost(post);
   logger.Info($"Post added to {blog.Name} - {title}");
