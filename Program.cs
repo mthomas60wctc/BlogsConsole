@@ -1,6 +1,8 @@
 ﻿﻿using System.ComponentModel.Design;
+using System.Transactions;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
 string path = Directory.GetCurrentDirectory() + "//nlog.config";
@@ -43,7 +45,12 @@ while (true)
   }
   else if (userChoice == "4")
   {
-    //TODO: MAKE A NEW POST
+    Blog? blog = selectBlog();
+    while (blog is null){
+      Console.WriteLine("You must select a single blog for posting!");
+      blog = selectBlog();
+    }
+    WritePost(blog);
   }
   Console.WriteLine("\nPress enter to continue");
   Console.ReadLine();
@@ -60,12 +67,13 @@ void displayPosts(Blog? blog)
   // Display all Blogs from the database
   IOrderedQueryable<Post> query;
   if (blog is null){
+  Console.WriteLine("Displaying all posts");
     query = db.Posts.OrderBy(p => p.Title);
   }
   else{
+    Console.WriteLine($"Displaying posts in {blog.Name}");
     query = db.Posts.Where(p => p.BlogId == blog.BlogId).OrderBy(p => p.Title);
   }
-  Console.WriteLine("Displaying Blogs");
   foreach (Post post in query)
   {
     Console.WriteLine($"\nTitle: {post.Title}\n");
@@ -90,11 +98,28 @@ Blog? selectBlog()
     Console.Write("Invalid selection, try again: ");
   }
   if (selection == 0) return null;
-  return query.ElementAt(selection);
+  return query.ElementAt(selection - 1);
   //returns unique ID
 }
 
-//TODO:WRITE POST FUNCTION
+void WritePost(Blog blog){
+  Console.Write("Enter title for your post: ");
+  string? title = Console.ReadLine();
+  while (title.IsNullOrEmpty()){
+    Console.Write("Please enter a valid title: ");
+    title = Console.ReadLine();
+  }
+  Console.Write($"Enter content for post '{title}': ");
+  string? content = Console.ReadLine();
+  Post post = new()
+  {
+      Title = title,
+      Content = content,
+      BlogId = blog.BlogId,
+      Blog = blog
+  };
+  db.AddPost(post);
+}
 
 void displayBlogs()
 {
