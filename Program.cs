@@ -3,11 +3,11 @@ using NLog;
 string path = Directory.GetCurrentDirectory() + "//nlog.config";
 
 // create instance of Logger
-var logger = LogManager.Setup().LoadConfigurationFromFile(path).GetCurrentClassLogger();
+Logger logger = LogManager.Setup().LoadConfigurationFromFile(path).GetCurrentClassLogger();
 
 logger.Info("Program started");
 
-var db = new DataContext();
+DataContext db = new();
 
 string? userChoice = "";
 Console.Clear();
@@ -46,12 +46,10 @@ while (true)
   {
     Console.WriteLine("-- ADD POST --");
     Blog? blog = SelectBlog();
-    while (blog is null)
+    if (blog is not null)
     {
-      Console.WriteLine("You must select a single blog for posting!");
-      blog = SelectBlog();
+      WritePost(blog);
     }
-    WritePost(blog);
   }
   Console.WriteLine("\nPress enter to continue");
   Console.ReadLine();
@@ -61,8 +59,8 @@ Console.WriteLine("Goodnye!");
 
 logger.Info("Program ended");
 
-//TODO SELECT BLOG FUNCTION
 
+//FUNCTIONS
 void DisplayPosts(Blog? blog)
 {
   // Display all Blogs from the database
@@ -79,7 +77,8 @@ void DisplayPosts(Blog? blog)
   }
   foreach (Post post in query)
   {
-    if (currentBlog != post.Blog?.Name){
+    if (currentBlog != post.Blog?.Name)
+    {
       currentBlog = post.Blog?.Name ?? "";
       Console.WriteLine($"\nDisplaying posts in {currentBlog}");
     }
@@ -92,7 +91,12 @@ Blog? SelectBlog()
 {
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
-  Console.WriteLine("Available Blogs");
+  Console.WriteLine($"{query.Count()} available Blogs");
+  if (query.Count() == 0)
+  {
+    logger.Error("There msut be at least 1 blog to make a post");
+    return null;
+  }
   for (int i = 0; i < query.Count(); i++)
   {
     Console.WriteLine($"{i + 1} - {query.ElementAt(i).Name}");
@@ -102,11 +106,12 @@ Blog? SelectBlog()
   int selection = 0;
   while (!Int32.TryParse(Console.ReadLine(), out selection) || selection < 0 || selection > query.Count())
   {
-    Console.Write("Invalid selection, try again: ");
+    logger.Error($"Selection must be between 0 and {query.Count()} (inculsive)");
+    Console.Write("Select Blog (0 for all): ");
   }
   if (selection == 0) return null;
   return query.ElementAt(selection - 1);
-  //returns unique ID
+  //returns null if user selected nothing, otherwise returns a blog object
 }
 
 void WritePost(Blog blog)
@@ -115,7 +120,8 @@ void WritePost(Blog blog)
   string? title = Console.ReadLine();
   while (title.IsNullOrEmpty())
   {
-    Console.Write("Please enter a valid title: ");
+    logger.Error("Title cannot be empty");
+    Console.Write($"Enter title for your post in {blog.Name}: ");
     title = Console.ReadLine();
   }
   Console.Write($"Enter content for post '{title}': ");
@@ -135,7 +141,7 @@ void DisplayBlogs()
 {
   // Display all Blogs from the database
   var query = db.Blogs.OrderBy(b => b.Name);
-  Console.WriteLine("Displaying Blogs");
+  Console.WriteLine($"Displaying {query.Count()} Blogs");
   foreach (Blog blog in query)
   {
     Console.WriteLine(blog.Name);
@@ -150,11 +156,12 @@ void AddBlog()
   name = Console.ReadLine() ?? "";
   while (name.IsNullOrEmpty())
   {
-    Console.Write("Invalid entry, try again: ");
+    logger.Error("Post title cannot be empty");
+    Console.Write("Enter a name for a new Blog: ");
     name = Console.ReadLine() ?? "";
   }
 
-  var blog = new Blog { Name = name };
+  Blog blog = new Blog { Name = name };
   db.AddBlog(blog);
-  logger.Info("Blog added - {name}", name);
+  logger.Info($"Blog added - {name}");
 }
